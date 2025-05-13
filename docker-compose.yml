@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Serviço Django
+  api:
+    build: .
+    container_name: api
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app  # Volume para sincronizar o código entre o host e o container
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db  # A aplicação depende do serviço db (PostgreSQL)
+    environment:
+      - DEBUG=${DJANGO_DEBUG}
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+    networks:
+      - backend
+
+  # Serviço PostgreSQL
+  db:
+    image: postgres:16
+    container_name: postgresql
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Volume persistente para o PostgreSQL
+    networks:
+      - backend
+
+volumes:
+  postgres_data:  # Volume persistente do PostgreSQL
+
+networks:
+  backend:
+    driver: bridge
