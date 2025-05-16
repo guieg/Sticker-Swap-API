@@ -27,19 +27,38 @@ Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
 
 ```env
 DEBUG=1
-SECRET_KEY=sua-secret-key
-DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1
+
+# Configuração do Banco de Dados
 POSTGRES_DB=meubanco
 POSTGRES_USER=usuario
 POSTGRES_PASSWORD=senha
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
+
+# Configuração do Django
+DJANGO_SECRET_KEY=sua_chave_secreta_aqui
+DJANGO_DEBUG=True
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Configuração do JWT
+JWT_SECRET_KEY=sua_chave_secreta_jwt
+
+# Outros
+DATABASE_URL=....
 ```
 
 ### Execução
 
 ```
 docker-compose up --build
+```
+
+### Setup do banco
+
+```
+docker exec -it api bash
+python manage.py makemigrations
+python manage.py migrate
 ```
 
 
