@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'api.stickers',
     'api.accounts',
+    'api.albuns',
 ]
 
 MIDDLEWARE = [

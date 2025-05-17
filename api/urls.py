@@ -42,4 +42,5 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     path('api/stickers/', include('api.stickers.urls')),
+    path('api/albuns/', include('api.albuns.urls')),
 ]
