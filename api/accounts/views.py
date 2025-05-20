@@ -6,7 +6,7 @@ from rest_framework.schemas import coreapi
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
-
+from ..albuns.models import Album
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -23,9 +23,16 @@ class RegisterView(APIView):
         email = request.data.get("email")
         if not username or not password or not email:
             return Response({"error": "Preencha todos os campos"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         user = User.objects.create_user(username=username, password=password, email=email)
+        Album.objects.create(user_id=user.id)
         return Response({"message": "Usuário criado com sucesso!"}, status=status.HTTP_201_CREATED)
+
+
+        # Save the new user
+
+
+
 
 
 class LoginSerializer(serializers.Serializer):
