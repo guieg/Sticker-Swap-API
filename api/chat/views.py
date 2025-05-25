@@ -1,8 +1,10 @@
 from django.shortcuts import render
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from .models import Chat, Message
 from .serializers import ChatSerializer, MensagemSerializer
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 class ChatViewSet(viewsets.ModelViewSet):
     """
@@ -18,7 +20,15 @@ class ChatViewSet(viewsets.ModelViewSet):
         Filters chats to show only those where the logged-in user is a participant
         """
         return Chat.objects.filter(participants=self.request.user) 
-        
+    
+    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[^/.]+)')
+    def list_chats_by_user(self, request, user_id=None):
+        """
+        Customized endpoint to list Chats from user
+        """
+        chats = Chat.objects.filter(participants__id=user_id)
+        serializer = self.get_serializer(chats, many=True)
+        return Response(serializer.data)        
 
 class MensagemViewSet(viewsets.ModelViewSet):
     """
@@ -33,3 +43,12 @@ class MensagemViewSet(viewsets.ModelViewSet):
         Automatically sets the sender of the message as the logged-in user
         """
         serializer.save(sender=self.request.user)
+
+    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[^/.]+)')
+    def list_messages_by_user(self, request, user_id=None):
+        """
+        Customized endpoint to list messages by user
+        """
+        messages = Message.objects.filter(sender__id=user_id)
+        serializer = self.get_serializer(messages, many=True)
+        return Response(serializer.data)

@@ -8,7 +8,7 @@ class ChatSerializer(serializers.ModelSerializer):
     """
     Serializer for the Chat model
     """
-    # Read-only field to display the usernames of the participants
+    participants = serializers.PrimaryKeyRelatedField(many=True, read_only=True) 
     participants_usernames = serializers.SerializerMethodField()
 
     class Meta:
@@ -51,18 +51,17 @@ class MensagemSerializer(serializers.ModelSerializer):
     Includes the sender's username
     """
     sender_username = serializers.ReadOnlyField(source='sender.username')
-    # The 'Chat' field will be a Chat ID (Writable Nested Serializer or PrimaryKeyRelatedField)
-    Chat = serializers.PrimaryKeyRelatedField(queryset=Chat.objects.all())
+    # The 'chat' field will be a Chat ID (Writable Nested Serializer or PrimaryKeyRelatedField)
+    chat = serializers.PrimaryKeyRelatedField(queryset=Chat.objects.all())
     # The 'sender' field will be a user ID (Writable Nested Serializer or PrimaryKeyRelatedField)
     sender = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Message
         fields = [
-            'id', 'Chat', 'sender', 'sender_username', 'horario',
-            'message_type', 'text_content', 'location_data', 'suggestion_data'
-        ]
-        read_only_fields = ['horario'] 
+            'id', 'chat', 'sender', 'sender_username', 'timestamp', 
+            'message_type', 'text_content', 'location_data', 'suggestion_data']
+        read_only_fields = ['timestamp'] 
 
     def validate(self, data):
         """
