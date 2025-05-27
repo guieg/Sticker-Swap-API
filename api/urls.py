@@ -43,4 +43,6 @@ urlpatterns = [
 
     path('api/stickers/', include('api.stickers.urls')),
     path('api/albuns/', include('api.albuns.urls')),
+
+    path('api/sticker-groups/', include('api.sticker_groups.urls')),
 ]

@@ -5,8 +5,7 @@ from .models import Sticker
 class StickerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sticker
-        fields = ['id', 'name', 'country', 'type', 'number', 'album', 'amount']
-        read_only_fields = ['id', 'number']  # `number` is auto-incremented and read-onlyfrom rest_framework import viewsets
+        fields = '__all__'
 
 
 class StickerViewSet(viewsets.ModelViewSet):
