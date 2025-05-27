@@ -7,6 +7,11 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from ..albuns.models import Album
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveAPIView
+from .models import User
+from rest_framework.serializers import ModelSerializer
+from django.shortcuts import get_object_or_404
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -54,3 +59,22 @@ class LoginView(APIView):
                 "refresh_token": str(refresh),
             })
         return Response({"error": "Credenciais inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ['password']
+  # Include all fields of the User model
+
+
+# View for fetching user information by id
+class UserDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]  # Authentication required
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        user_id = kwargs.get("id")
+        user = get_object_or_404(User, pk=user_id)  # Fetch the user by ID
+        data = self.serializer_class(user).data  # Serialize the user instance
+        return Response(data)
