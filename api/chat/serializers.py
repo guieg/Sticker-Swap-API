@@ -8,7 +8,7 @@ class ChatSerializer(serializers.ModelSerializer):
     """
     Serializer for the Chat model
     """
-    participants = serializers.PrimaryKeyRelatedField(many=True, read_only=True) 
+    participants = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
     participants_usernames = serializers.SerializerMethodField()
 
     class Meta:
