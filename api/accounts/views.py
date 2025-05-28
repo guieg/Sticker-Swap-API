@@ -6,7 +6,12 @@ from rest_framework.schemas import coreapi
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
-
+from ..albuns.models import Album
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveAPIView
+from .models import User
+from rest_framework.serializers import ModelSerializer
+from django.shortcuts import get_object_or_404
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -21,11 +26,19 @@ class RegisterView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
         email = request.data.get("email")
+        picture = request.data.get("picture")
         if not username or not password or not email:
             return Response({"error": "Preencha todos os campos"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user = User.objects.create_user(username=username, password=password, email=email)
+
+        user = User.objects.create_user(username=username, password=password, email=email, picture=picture)
+        Album.objects.create(user_id=user.id)
         return Response({"message": "Usuário criado com sucesso!"}, status=status.HTTP_201_CREATED)
+
+
+        # Save the new user
+
+
+
 
 
 class LoginSerializer(serializers.Serializer):
@@ -47,3 +60,22 @@ class LoginView(APIView):
                 "refresh_token": str(refresh),
             })
         return Response({"error": "Credenciais inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ['password']
+  # Include all fields of the User model
+
+
+# View for fetching user information by id
+class UserDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]  # Authentication required
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        user_id = kwargs.get("id")
+        user = get_object_or_404(User, pk=user_id)  # Fetch the user by ID
+        data = self.serializer_class(user).data  # Serialize the user instance
+        return Response(data)

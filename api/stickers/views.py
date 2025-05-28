@@ -1,18 +1,29 @@
-from rest_framework import serializers
-from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework import serializers, viewsets
 from .models import Sticker
 
 
 class StickerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sticker
-        fields = ['id', 'number', 'name', 'country', 'type', 'album_id']
+        fields = '__all__'
+
 
 class StickerViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    """
+    ViewSet for managing stickers.
+    """
     queryset = Sticker.objects.all()
     serializer_class = StickerSerializer
 
+    def perform_create(self, serializer):
+        """
+        Override the create method to handle any custom logic
+        if required during Sticker creation.
+        """
+        serializer.save()
 
-# Create your views here.
+    def perform_update(self, serializer):
+        """
+        Optional: Handle custom actions during updates.
+        """
+        serializer.save()

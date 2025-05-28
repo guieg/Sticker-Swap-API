@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'api.stickers',
     'api.accounts',
     'api.albuns',
-    'api.chat'
+    'api.chat',
+    'api.sticker_groups'
+
 ]
 
 MIDDLEWARE = [
