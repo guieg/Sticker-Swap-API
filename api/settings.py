@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'api.stickers',
     'api.accounts',
     'api.albuns',
+    'api.chat',
     'api.sticker_groups'
+
 ]
 
 MIDDLEWARE = [
@@ -93,7 +95,7 @@ DATABASES = {
         'NAME': config('POSTGRES_DB'),
         'USER': config('POSTGRES_USER'),
         'PASSWORD': config('POSTGRES_PASSWORD'),
-        'HOST': config('POSTGRES_HOST'),  # Nome do serviço no Docker Compose
+        'HOST': 'db',  # Nome do serviço no Docker Compose
         'PORT': '5432',
     }
 }
