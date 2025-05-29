@@ -8,7 +8,8 @@ class Sticker(models.Model):
 
     text = models.CharField(max_length=50, default="")
     name = models.CharField(max_length=100, default="")
-    sticker_group = models.ForeignKey(StickerGroup, on_delete=models.CASCADE, default=1)
-    album = models.ForeignKey(Album, on_delete=models.CASCADE, default=1)
+    sticker_group = models.ForeignKey(StickerGroup, on_delete=models.CASCADE, null=True, blank=True)
+    album = models.ForeignKey(Album, on_delete=models.CASCADE, null=True, blank=True)
     amount = models.PositiveIntegerField(default=0)
+
 
