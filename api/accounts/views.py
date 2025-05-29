@@ -22,6 +22,9 @@ class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
     email = serializers.EmailField()
+    # picture = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -31,13 +34,15 @@ class RegisterView(APIView):
         password = request.data.get("password")
         email = request.data.get("email")
         picture = request.data.get("picture")
+        first_name = request.data.get("first_name")
+        last_name = request.data.get("last_name")
         if not username or not password or not email:
             return Response({"error": "Preencha todos os campos"}, status=status.HTTP_400_BAD_REQUEST)
 
 
         with transaction.atomic():
             # Create user and album
-            user = User.objects.create_user(username=username, password=password, email=email, picture=picture)
+            user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name, picture=picture)
             album = Album.objects.create(user_id=user.id)
 
             # Create Sticker Groups
