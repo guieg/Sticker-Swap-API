@@ -1,4 +1,4 @@
-from django.db import transaction
+from django.db import transaction, connection
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, serializers
 from rest_framework.permissions import AllowAny
@@ -16,6 +16,11 @@ from django.shortcuts import get_object_or_404
 
 from ..sticker_groups.models import StickerGroup
 from ..stickers.models import Sticker
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -152,3 +157,36 @@ class UserDetailView(RetrieveAPIView):
         user = get_object_or_404(User, pk=user_id)  # Fetch the user by ID
         data = self.serializer_class(user).data  # Serialize the user instance
         return Response(data)
+
+
+
+class AccountSearchView(APIView):
+    """
+    View para buscar usuários pelo username via substring (case insensitive) usando SQL puro.
+    """
+
+    def get(self, request):
+        username = request.GET.get("username")
+        if not username:
+            return Response(
+                {"error": "O campo 'username' é obrigatório."},
+                status=HTTP_400_BAD_REQUEST
+            )
+
+        # Obter o nome da tabela do modelo User
+        User = get_user_model()
+        table_name = User._meta.db_table
+
+        # Montar a query SQL
+        sql_query = f"SELECT id, username FROM {table_name} WHERE username ILIKE %s"
+        query_params = [f"%{username}%"]
+
+        # Executar a query SQL pura
+        with connection.cursor() as cursor:
+            cursor.execute(sql_query, query_params)
+            rows = cursor.fetchall()
+
+        # Serializar os resultados
+        user_data = [{"id": row[0], "username": row[1]} for row in rows]
+        return Response(user_data, status=HTTP_200_OK)
+
