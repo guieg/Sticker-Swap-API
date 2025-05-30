@@ -15,12 +15,13 @@ class ChatViewSet(viewsets.ModelViewSet):
     serializer_class = ChatSerializer
     permission_classes = [permissions.IsAuthenticated]  # Requires authentication
 
+
     def get_queryset(self):
         """
         Filters chats to show only those where the logged-in user is a participant
         """
-        return Chat.objects.filter(participants=self.request.user) 
-    
+        return Chat.objects.filter(participants=self.request.user)
+
     @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[^/.]+)')
     def list_chats_by_user(self, request, user_id=None):
         """
@@ -42,7 +43,9 @@ class ChatViewSet(viewsets.ModelViewSet):
 
         mensagens = Message.objects.filter(chat=chat).order_by('timestamp')
         serializer = MensagemSerializer(mensagens, many=True)
+        
         return Response(serializer.data)       
+
 
 class MensagemViewSet(viewsets.ModelViewSet):
     """
