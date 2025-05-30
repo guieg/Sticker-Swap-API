@@ -55,13 +55,18 @@ class MensagemSerializer(serializers.ModelSerializer):
     chat = serializers.PrimaryKeyRelatedField(queryset=Chat.objects.all())
     # The 'sender' field will be a user ID (Writable Nested Serializer or PrimaryKeyRelatedField)
     sender = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    exchange_confirmed_by_username = serializers.ReadOnlyField(source='exchange_confirmed_by.username')
+    location_confirmed_by_username = serializers.ReadOnlyField(source='location_confirmed_by.username')
 
     class Meta:
         model = Message
         fields = [
             'id', 'chat', 'sender', 'sender_username', 'timestamp', 
-            'message_type', 'text_content', 'location_data', 'suggestion_data']
-        read_only_fields = ['timestamp'] 
+            'message_type', 'text_content', 'location_data', 'suggestion_data',
+            'exchange_confirmed', 'exchange_confirmed_by', 'exchange_confirmed_by_username',
+            'location_confirmed', 'location_confirmed_by', 'location_confirmed_by_username', 
+        ]
+        read_only_fields = ['timestamp', 'exchange_confirmed_by', 'location_confirmed_by'] 
 
     def validate(self, data):
         """
