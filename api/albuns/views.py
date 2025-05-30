@@ -35,7 +35,9 @@ class AlbumViewSet(viewsets.ModelViewSet):
         sticker_groups = StickerGroup.objects.filter()  # Assuming you link StickerGroup with Album
 
         for group in sticker_groups:
-            stickers = Sticker.objects.filter(sticker_group=group)
+            stickers = Sticker.objects.filter(sticker_group=group, album=album).order_by(
+                'id'
+            )
             sticker_data = [
                 model_to_dict(sticker) for sticker in stickers
             ]
