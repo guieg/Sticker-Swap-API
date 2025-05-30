@@ -52,3 +52,69 @@ class MensagemViewSet(viewsets.ModelViewSet):
         messages = Message.objects.filter(sender__id=user_id)
         serializer = self.get_serializer(messages, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['put'], url_path='confirmar-troca')
+    def confirm_exchange(self, request, pk=None):
+        """
+        Confirma a sugestão de troca contida em uma mensagem.
+        Endpoint: PUT /api/chat/mensagens/{id}/confirmar-troca/
+        """
+        try:
+            message = self.get_object() # Obtém a mensagem pelo PK
+        except Message.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Verifica se a mensagem é do tipo 'suggestion'
+        if message.message_type != 'suggestion':
+            return Response(
+                {"detail": "Esta mensagem não é uma sugestão de troca e não pode ser confirmada como tal."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if request.user not in message.chat.participants.all():
+            return Response(
+                {"detail": "Você não tem permissão para confirmar esta troca."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        message.exchange_confirmed = True
+        message.exchange_confirmed_by = request.user # Define quem confirmou
+        message.save()
+
+        serializer = self.get_serializer(message)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['put'], url_path='confirmar-local')
+    def confirm_location(self, request, pk=None):
+        """
+        Confirma o local de troca contido em uma mensagem.
+        Endpoint: PUT /api/chat/mensagens/{id}/confirmar-local/
+        """
+        try:
+            message = self.get_object() # Obtém a mensagem pelo PK
+        except Message.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Verifica se a mensagem é do tipo 'location'
+        if message.message_type != 'location':
+            return Response(
+                {"detail": "Esta mensagem não é um local de troca e não pode ser confirmada como tal."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Verifica se o usuário logado é um dos participantes da conversa
+        if request.user not in message.chat.participants.all():
+            return Response(
+                {"detail": "Você não tem permissão para confirmar este local de troca."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        message.location_confirmed = True
+        message.location_confirmed_by = request.user # Define quem confirmou
+        message.save()
+
+        serializer = self.get_serializer(message)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+

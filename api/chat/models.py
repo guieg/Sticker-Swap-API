@@ -38,6 +38,32 @@ class Message(models.Model):
     location_data = models.TextField(blank=True, null=True)
     suggestion_data = models.TextField(blank=True, null=True)
 
+    # Indica se a troca de figurinhas foi confirmada
+    exchange_confirmed = models.BooleanField(
+        default=False,
+    )
+    # Quem confirmou a troca de figurinhas (opcional, pode ser nulo se não confirmada)
+    exchange_confirmed_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL, # Mantém a mensagem se o usuário for deletado
+        related_name='confirmed_exchanges',
+        null=True,
+        blank=True,
+    )
+
+    location_confirmed = models.BooleanField(
+        default=False,
+        help_text="Indica se o local de troca nesta mensagem foi confirmado."
+    )
+    location_confirmed_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL, # Mantém a mensagem se o usuário for deletado
+        related_name='confirmed_locations',
+        null=True,
+        blank=True,
+        help_text="O usuário que confirmou o local de troca."
+    )   
+
     class Meta:
         verbose_name = "Message"
         verbose_name_plural = "Messages"
