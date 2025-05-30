@@ -4,7 +4,7 @@ from django.db import migrations
 def add_sticker_groups(apps, schema_editor):
     StickerGroup = apps.get_model("sticker_groups", "StickerGroup")
     groups = [
-        "[FWC] Especiais",
+        # "[FWC] Especiais",
         "[FWC] Estádios",
         "[FWC] Bola",
         "[QAT] Catar",
