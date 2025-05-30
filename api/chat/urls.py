@@ -10,4 +10,6 @@ router.register(r'mensagens', MensagemViewSet)
 urlpatterns = [
     # Inclui as URLs geradas pelo roteador.
     path('', include(router.urls)),
-]
+    path('conversas/<int:pk>/mensagens/', ChatViewSet.as_view({'get': 'listar_mensagens'}), name='chat-conversas-mensagens'),
+]+ router.urls
+
