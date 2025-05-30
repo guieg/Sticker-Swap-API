@@ -28,7 +28,21 @@ class ChatViewSet(viewsets.ModelViewSet):
         """
         chats = Chat.objects.filter(participants__id=user_id)
         serializer = self.get_serializer(chats, many=True)
-        return Response(serializer.data)        
+        return Response(serializer.data) 
+
+        # @action(detail=True, methods=['get'], url_path='mensagens')
+    def listar_mensagens(self, request, pk=None):
+        """
+        Lista todas as mensagens pertencentes a esta conversa (Chat).
+        """
+        try:
+            chat = self.get_object() # Obtém o objeto Chat pelo PK
+        except Chat.DoesNotExist:
+            return Response({"detail": "Conversa não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        mensagens = Message.objects.filter(chat=chat).order_by('timestamp')
+        serializer = MensagemSerializer(mensagens, many=True)
+        return Response(serializer.data)       
 
 class MensagemViewSet(viewsets.ModelViewSet):
     """
@@ -116,16 +130,3 @@ class MensagemViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(message)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    # @action(detail=True, methods=['get'], url_path='mensagens')
-    def listar_mensagens(self, request, pk=None):
-        """
-        Lista todas as mensagens pertencentes a esta conversa (Chat).
-        """
-        try:
-            chat = self.get_object() # Obtém o objeto Chat pelo PK
-        except Chat.DoesNotExist:
-            return Response({"detail": "Conversa não encontrada."}, status=status.HTTP_404_NOT_FOUND)
-
-        mensagens = Message.objects.filter(chat=chat).order_by('timestamp')
-        serializer = MensagemSerializer(mensagens, many=True)
-        return Response(serializer.data)
