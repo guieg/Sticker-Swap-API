@@ -41,6 +41,7 @@ class Message(models.Model):
     # Indica se a troca de figurinhas foi confirmada
     exchange_confirmed = models.BooleanField(
         default=False,
+        null=True
     )
     # Quem confirmou a troca de figurinhas (opcional, pode ser nulo se não confirmada)
     exchange_confirmed_by = models.ForeignKey(
@@ -53,6 +54,7 @@ class Message(models.Model):
 
     location_confirmed = models.BooleanField(
         default=False,
+        null=True,
         help_text="Indica se o local de troca nesta mensagem foi confirmado."
     )
     location_confirmed_by = models.ForeignKey(
