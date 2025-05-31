@@ -178,7 +178,7 @@ class AccountSearchView(APIView):
         table_name = User._meta.db_table
 
         # Montar a query SQL
-        sql_query = f"SELECT id, username, first_name, last_name FROM {table_name} WHERE username ILIKE %s"
+        sql_query = f"SELECT id, username, first_name, last_name, picture FROM {table_name} WHERE username ILIKE %s"
         query_params = [f"%{username}%"]
 
         # Executar a query SQL pura
@@ -187,6 +187,6 @@ class AccountSearchView(APIView):
             rows = cursor.fetchall()
 
         # Serializar os resultados
-        user_data = [{"id": row[0], "username": row[1], "first_name": row[2], "last_name": row[3]} for row in rows]
+        user_data = [{"id": row[0], "username": row[1], "first_name": row[2], "last_name": row[3], "picture": row[4]} for row in rows]
         return Response(user_data, status=HTTP_200_OK)
 
